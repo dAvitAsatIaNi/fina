@@ -1,0 +1,22 @@
+# Visual Studio / Rider / JetBrains
+.vs/
+.idea/
+
+# Build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userprefs
+
+# NuGet
+*.nupkg
+packages/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store

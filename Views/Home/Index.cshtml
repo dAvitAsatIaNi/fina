@@ -1,0 +1,199 @@
+﻿@model ProductManagementViewModel
+@{
+ViewData["Title"] = "Product Management";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="mb-2">
+                        <label>Group</label>
+                        <select name="GroupId" class="form-control" required>
+                            @foreach (var g in Model.Groups)
+                            {
+                            <option value="@g.Id">@g.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label>Code</label>
+                        <input type="text" name="Code" class="form-control" required/>
+                    </div>
+                    <div class="mb-2">
+                        <label>Name</label>
+                        <input type="text" name="Name" class="form-control" required/>
+                    </div>
+                    <div class="mb-2">
+                        <label>Country</label>
+                        <input type="text" name="Country" class="form-control"/>
+                    </div>
+                    <div class="mb-2">
+                        <label>Price</label>
+                        <input type="number" name="Price" step="0.01" class="form-control" required/>
+                    </div>
+                    <div class="mb-2">
+                        <label>Start Date</label>
+                        <input type="date" name="StartDate" class="form-control" required/>
+                    </div>
+                    <div class="mb-2">
+                        <label>End Date</label>
+                        <input type="date" name="EndDate" class="form-control"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">Add Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-3">
+
+    <div class="row">
+
+        <!-- GROUP TREE -->
+        <div class="col-3 border-end" style="height: 90vh; overflow-y: auto;">
+            <h5 class="mb-3">პროდუქტები</h5>
+
+            <div class="mb-2">
+                <button class="btn btn-sm btn-primary">+</button>
+                <button class="btn btn-sm btn-warning">Edit</button>
+                <button class="btn btn-sm btn-danger">Delete</button>
+            </div>
+
+            <ul id="groupTree" class="list-group">
+                @foreach (var parent in Model.Groups.Where(g => g.ParentId == null))
+                {
+                    <li class="list-group-item">
+
+                        @parent.Name
+
+                        @{
+                            var children = Model.Groups.Where(g => g.ParentId == parent.Id).ToList();
+                        }
+
+                        @if (children.Any())
+                        {
+                            <ul class="list-group mt-1 ms-3">
+                                @foreach (var child in children)
+                                {
+                                    <li class="list-group-item">
+                                        @child.Name
+
+                                        @{
+                                            var subChildren = Model.Groups.Where(g => g.ParentId == child.Id).ToList();
+                                        }
+
+                                        @if (subChildren.Any())
+                                        {
+                                            <ul class="list-group mt-1 ms-3">
+                                                @foreach (var sub in subChildren)
+                                                {
+                                                    <li class="list-group-item">@sub.Name</li>
+                                                }
+                                            </ul>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <!-- PRODUCT TABLE -->
+        <div class="col-9">
+            <div class="d-flex justify-content-end mb-2">
+                <button class="btn btn-primary btn-sm me-2">+</button>
+                <button class="btn btn-warning btn-sm me-2">Edit</button>
+                <button class="btn btn-danger btn-sm">Delete</button>
+            </div>
+            
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>კოდი</th>
+                    <th>დასახელება</th>
+                    <th>ფასი</th>
+                    <th>ქვეყანა</th>
+                    <th>თარიღიდან</th>
+                    <th>თარიღამდე</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                @foreach (var p in Model.Products)
+                {
+                    <tr>
+                        <td>@p.Code</td>
+                        <td>@p.Name</td>
+                        <td>@p.Price</td>
+                        <td>@p.Country</td>
+                        <td>@p.StartDate.ToString("yyyy-MM-dd")</td>
+                        <td>@p.EndDate.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.btn-primary.me-2').click(function() {
+            var modal = new bootstrap.Modal(document.getElementById('addProductModal'));
+            modal.show();
+        });
+        
+        $('#addProductForm').submit(function(e) {
+            e.preventDefault();
+
+            var formData = {
+                GroupId: parseInt($('select[name="GroupId"]').val()),
+                Code: $('input[name="Code"]').val(),
+                Name: $('input[name="Name"]').val(),
+                Country: $('input[name="Country"]').val(),
+                Price: parseFloat($('input[name="Price"]').val()),
+                StartDate: $('input[name="StartDate"]').val(),
+                EndDate: $('input[name="EndDate"]').val()
+            };
+
+            $.ajax({
+                url: 'api/Products/add-product',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    var modalEl = document.getElementById('addProductModal');
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+
+                    var newRow = `<tr>
+                        <td>${formData.Code}</td>
+                        <td>${formData.Name}</td>
+                        <td>${formData.Price}</td>
+                        <td>${formData.Country}</td>
+                        <td>${formData.StartDate}</td>
+                        <td>${formData.EndDate}</td>
+                    </tr>`;
+                    $('table tbody').append(newRow);
+                },
+                error: function(xhr, status, error) {
+                    alert("Error adding product: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
