@@ -34,4 +34,11 @@ public class GroupRepository : IGroupRepository
             .FromSqlInterpolated($"EXEC fina.GetGroups")
             .ToListAsync();
     }
+    
+    public async Task<List<Group>> GetGroupByIdAsync(int id)
+    {
+        return await _context.Groups
+            .FromSqlInterpolated($"EXEC fina.GetGroupById {id}")
+            .ToListAsync();
+    }
 }

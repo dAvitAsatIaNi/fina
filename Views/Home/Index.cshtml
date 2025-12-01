@@ -5,13 +5,30 @@ ViewData["Title"] = "Product Management";
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Add Product Modal -->
+<style>
+    tr.selected-row td {
+        background-color: #0d6efd !important;
+        color: white !important;
+    }
+
+    tr.selected-row {
+        background-color: #0d6efd !important;
+        color: white !important;
+    }
+
+    .list-group-item.selected-group {
+        background-color: #0d6efd !important;
+        color: white !important;
+    }
+</style>
+
+<!-- ADD PRODUCT MODAL -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content p-3">
             <div class="modal-header">
                 <h5 class="modal-title">Add Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="addProductForm">
@@ -26,27 +43,27 @@ ViewData["Title"] = "Product Management";
                     </div>
                     <div class="mb-2">
                         <label>Code</label>
-                        <input type="text" name="Code" class="form-control" required/>
+                        <input type="text" name="Code" class="form-control" required />
                     </div>
                     <div class="mb-2">
                         <label>Name</label>
-                        <input type="text" name="Name" class="form-control" required/>
+                        <input type="text" name="Name" class="form-control" required />
                     </div>
                     <div class="mb-2">
                         <label>Country</label>
-                        <input type="text" name="Country" class="form-control"/>
+                        <input type="text" name="Country" class="form-control" />
                     </div>
                     <div class="mb-2">
                         <label>Price</label>
-                        <input type="number" name="Price" step="0.01" class="form-control" required/>
+                        <input type="number" step="0.01" name="Price" class="form-control" required />
                     </div>
                     <div class="mb-2">
                         <label>Start Date</label>
-                        <input type="date" name="StartDate" class="form-control" required/>
+                        <input type="date" name="StartDate" class="form-control" required />
                     </div>
                     <div class="mb-2">
                         <label>End Date</label>
-                        <input type="date" name="EndDate" class="form-control"/>
+                        <input type="date" name="EndDate" class="form-control" />
                     </div>
                     <button type="submit" class="btn btn-primary mt-2">Add Product</button>
                 </form>
@@ -55,70 +72,175 @@ ViewData["Title"] = "Product Management";
     </div>
 </div>
 
-<div class="container-fluid mt-3">
-
-    <div class="row">
-
-        <!-- GROUP TREE -->
-        <div class="col-3 border-end" style="height: 90vh; overflow-y: auto;">
-            <h5 class="mb-3">პროდუქტები</h5>
-
-            <div class="mb-2">
-                <button class="btn btn-sm btn-primary">+</button>
-                <button class="btn btn-sm btn-warning">Edit</button>
-                <button class="btn btn-sm btn-danger">Delete</button>
+<!-- EDIT PRODUCT MODAL -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+            <div class="modal-body">
+                <form id="editProductForm">
+                    <input type="hidden" name="Id" />
+                    <div class="mb-2">
+                        <label>Group</label>
+                        <select name="GroupId" class="form-control" required>
+                            @foreach (var g in Model.Groups)
+                            {
+                            <option value="@g.Id">@g.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label>Code</label>
+                        <input type="text" name="Code" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Name</label>
+                        <input type="text" name="Name" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Country</label>
+                        <input type="text" name="Country" class="form-control" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Price</label>
+                        <input type="number" step="0.01" name="Price" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Start Date</label>
+                        <input type="date" name="StartDate" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>End Date</label>
+                        <input type="date" name="EndDate" class="form-control" />
+                    </div>
+                    <button class="btn btn-warning mt-2" type="submit">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- ADD GROUP MODAL -->
+<div class="modal fade" id="addGroupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addGroupForm">
+                    <div class="mb-2">
+                        <label>Name</label>
+                        <input type="text" name="Name" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Parent Group</label>
+                        <select name="ParentId" class="form-control">
+                            <option value="">---none---</option>
+                            @foreach (var g in Model.Groups)
+                            {
+                            <option value="@g.Id">@g.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">Add Group</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT GROUP MODAL -->
+<div class="modal fade" id="editGroupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editGroupForm">
+                    <input type="hidden" name="Id" />
+                    <div class="mb-2">
+                        <label>Name</label>
+                        <input type="text" name="Name" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label>Parent Group</label>
+                        <select name="ParentId" class="form-control">
+                            <option value="">---none---</option>
+                            @foreach (var g in Model.Groups)
+                            {
+                            <option value="@g.Id">@g.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <button class="btn btn-warning mt-2" type="submit">Save Updates</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-3">
+    <div class="row">
+        <!-- GROUP TABLE -->
+        <div class="col-3 border-end" style="height: 90vh; overflow-y: auto;">
+            <h5 class="mb-3">Groups</h5>
+            <div class="mb-2">
+                <button id="btnAddGroup" class="btn btn-sm btn-primary">+</button>
+                <button id="btnEditGroup" class="btn btn-sm btn-warning">Edit</button>
+                <button id="btnDeleteGroup" class="btn btn-sm btn-danger">Delete</button>
+            </div>
             <ul id="groupTree" class="list-group">
                 @foreach (var parent in Model.Groups.Where(g => g.ParentId == null))
                 {
-                    <li class="list-group-item">
-
-                        @parent.Name
-
-                        @{
-                            var children = Model.Groups.Where(g => g.ParentId == parent.Id).ToList();
-                        }
-
-                        @if (children.Any())
+                <li class="list-group-item" data-id="@parent.Id">@parent.Name
+                    @{
+                    var children = Model.Groups.Where(g => g.ParentId == parent.Id).ToList();
+                    }
+                    @if (children.Any())
+                    {
+                    <ul class="list-group mt-1 ms-3">
+                        @foreach (var child in children)
                         {
+                        <li class="list-group-item" data-id="@child.Id">@child.Name
+                            @{
+                            var subChildren = Model.Groups.Where(g => g.ParentId == child.Id).ToList();
+                            }
+                            @if (subChildren.Any())
+                            {
                             <ul class="list-group mt-1 ms-3">
-                                @foreach (var child in children)
+                                @foreach (var sub in subChildren)
                                 {
-                                    <li class="list-group-item">
-                                        @child.Name
-
-                                        @{
-                                            var subChildren = Model.Groups.Where(g => g.ParentId == child.Id).ToList();
-                                        }
-
-                                        @if (subChildren.Any())
-                                        {
-                                            <ul class="list-group mt-1 ms-3">
-                                                @foreach (var sub in subChildren)
-                                                {
-                                                    <li class="list-group-item">@sub.Name</li>
-                                                }
-                                            </ul>
-                                        }
-                                    </li>
+                                <li class="list-group-item" data-id="@sub.Id">@sub.Name</li>
                                 }
                             </ul>
+                            }
+                        </li>
                         }
-                    </li>
+                    </ul>
+                    }
+                </li>
                 }
             </ul>
+            <input type="hidden" id="selectedGroupId" />
         </div>
 
         <!-- PRODUCT TABLE -->
         <div class="col-9">
             <div class="d-flex justify-content-end mb-2">
-                <button class="btn btn-primary btn-sm me-2">+</button>
-                <button class="btn btn-warning btn-sm me-2">Edit</button>
-                <button class="btn btn-danger btn-sm">Delete</button>
+                <button id="btnDiagram" class="btn btn-info btn-sm me-2">Diagram</button>
+
+                <button id="btnAdd" class="btn btn-primary btn-sm me-2">+</button>
+                <button id="btnEdit" class="btn btn-warning btn-sm me-2">Edit</button>
+                <button id="btnDeleteProduct" class="btn btn-danger btn-sm">Delete</button>
             </div>
-            
-            <table class="table table-hover table-striped">
+            <table class="table table-hover">
                 <thead>
                 <tr>
                     <th>კოდი</th>
@@ -130,70 +252,181 @@ ViewData["Title"] = "Product Management";
                 </tr>
                 </thead>
                 <tbody>
-
                 @foreach (var p in Model.Products)
                 {
-                    <tr>
-                        <td>@p.Code</td>
-                        <td>@p.Name</td>
-                        <td>@p.Price</td>
-                        <td>@p.Country</td>
-                        <td>@p.StartDate.ToString("yyyy-MM-dd")</td>
-                        <td>@p.EndDate.ToString("yyyy-MM-dd")</td>
-                    </tr>
+                <tr data-id="@p.Id" class="product-row">
+                    <td>@p.Code</td>
+                    <td>@p.Name</td>
+                    <td>@p.Price</td>
+                    <td>@p.Country</td>
+                    <td>@p.StartDate.ToString("yyyy-MM-dd")</td>
+                    <td>@p.EndDate.ToString("yyyy-MM-dd")</td>
+                </tr>
                 }
                 </tbody>
             </table>
+            <input type="hidden" id="selectedProductId" />
         </div>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    $(document).ready(function() {
-        $('.btn-primary.me-2').click(function() {
-            var modal = new bootstrap.Modal(document.getElementById('addProductModal'));
-            modal.show();
+    $(document).ready(function () {
+
+        function formatDate(d) {
+            if (!d) return "";
+            return d.includes("T") ? d.split("T")[0] : d;
+        }
+        
+        $("#btnDiagram").click(function () {
+            var url = "/Products/Diagram";
+            window.open(url, "_blank");
         });
         
-        $('#addProductForm').submit(function(e) {
+        $(document).on("click", ".product-row", function () {
+            $(".product-row").removeClass("selected-row");
+            $(this).addClass("selected-row");
+            $("#selectedProductId").val($(this).data("id"));
+        });
+        
+        $(document).on("click", "#groupTree .list-group-item", function (e) {
+            e.stopPropagation();
+            $("#groupTree .list-group-item").removeClass("selected-group");
+            $(this).addClass("selected-group");
+            $("#selectedGroupId").val($(this).data("id"));
+        });
+        
+        $("#btnAdd").click(function () { new bootstrap.Modal('#addProductModal').show(); });
+        $("#addProductForm").submit(function (e) {
             e.preventDefault();
-
-            var formData = {
-                GroupId: parseInt($('select[name="GroupId"]').val()),
-                Code: $('input[name="Code"]').val(),
-                Name: $('input[name="Name"]').val(),
-                Country: $('input[name="Country"]').val(),
-                Price: parseFloat($('input[name="Price"]').val()),
-                StartDate: $('input[name="StartDate"]').val(),
-                EndDate: $('input[name="EndDate"]').val()
+            var data = {
+                GroupId: parseInt($(this).find('select[name="GroupId"]').val()),
+                Code: $(this).find('input[name="Code"]').val(),
+                Name: $(this).find('input[name="Name"]').val(),
+                Country: $(this).find('input[name="Country"]').val(),
+                Price: parseFloat($(this).find('input[name="Price"]').val()),
+                StartDate: $(this).find('input[name="StartDate"]').val(),
+                EndDate: $(this).find('input[name="EndDate"]').val()
             };
-
             $.ajax({
-                url: 'api/Products/add-product',
+                url: '/api/products/add-product',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify(formData),
-                success: function(response) {
-                    var modalEl = document.getElementById('addProductModal');
-                    var modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
-
-                    var newRow = `<tr>
-                        <td>${formData.Code}</td>
-                        <td>${formData.Name}</td>
-                        <td>${formData.Price}</td>
-                        <td>${formData.Country}</td>
-                        <td>${formData.StartDate}</td>
-                        <td>${formData.EndDate}</td>
-                    </tr>`;
-                    $('table tbody').append(newRow);
-                },
-                error: function(xhr, status, error) {
-                    alert("Error adding product: " + xhr.responseText);
-                }
+                data: JSON.stringify(data),
+                success: function () { location.reload(); },
+                error: function (xhr) { alert("Add failed: " + xhr.responseText); }
             });
         });
+        
+        $("#btnAddGroup").click(function () { new bootstrap.Modal('#addGroupModal').show(); });
+        $("#addGroupForm").submit(function (e) {
+            e.preventDefault();
+            var data = {
+                Name: $(this).find('input[name="Name"]').val(),
+                ParentId: $(this).find('select[name="ParentId"]').val() ? parseInt($(this).find('select[name="ParentId"]').val()) : null
+            };
+            $.ajax({
+                url: '/api/groups/add-group',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function () { location.reload(); },
+                error: function (xhr) { alert("Add failed: " + xhr.responseText); }
+            });
+        });
+        
+        $("#btnEdit").click(function () {
+            var id = $("#selectedProductId").val();
+            if (!id) { alert("Select a product first."); return; }
+            $.get(`/api/products/get-product-by-id/${id}`, function (response) {
+                var p = response[0];
+                $('#editProductForm input[name="Id"]').val(p.id);
+                $('#editProductForm select[name="GroupId"]').val(p.groupId);
+                $('#editProductForm input[name="Code"]').val(p.code);
+                $('#editProductForm input[name="Name"]').val(p.name);
+                $('#editProductForm input[name="Country"]').val(p.country);
+                $('#editProductForm input[name="Price"]').val(p.price);
+                $('#editProductForm input[name="StartDate"]').val(formatDate(p.startDate));
+                $('#editProductForm input[name="EndDate"]').val(formatDate(p.endDate));
+                new bootstrap.Modal('#editProductModal').show();
+            });
+        });
+        $("#editProductForm").submit(function (e) {
+            e.preventDefault();
+            var data = {
+                Id: parseInt($('#editProductForm input[name="Id"]').val()),
+                GroupId: parseInt($('#editProductForm select[name="GroupId"]').val()),
+                Code: $('#editProductForm input[name="Code"]').val(),
+                Name: $('#editProductForm input[name="Name"]').val(),
+                Country: $('#editProductForm input[name="Country"]').val(),
+                Price: parseFloat($('#editProductForm input[name="Price"]').val()),
+                StartDate: $('#editProductForm input[name="StartDate"]').val(),
+                EndDate: $('#editProductForm input[name="EndDate"]').val() || null
+            };
+            $.ajax({
+                url: "/api/products/edit-product",
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function () { location.reload(); },
+                error: function (xhr) { alert("Update failed: " + xhr.responseText); }
+            });
+        });
+        
+        $("#btnEditGroup").click(function () {
+            var id = $("#selectedGroupId").val();
+            if (!id) { alert("Select a group first."); return; }
+            $.get(`/api/groups/get-group-by-id/${id}`, function (response) {
+                var g = response[0];
+                $('#editGroupForm input[name="Id"]').val(g.id);
+                $('#editGroupForm input[name="Name"]').val(g.name);
+                $('#editGroupForm select[name="ParentId"]').val(g.parentId || "");
+                new bootstrap.Modal('#editGroupModal').show();
+            });
+        });
+        $("#editGroupForm").submit(function (e) {
+            e.preventDefault();
+            var data = {
+                Id: parseInt($('#editGroupForm input[name="Id"]').val()),
+                Name: $('#editGroupForm input[name="Name"]').val(),
+                ParentId: $('#editGroupForm select[name="ParentId"]').val() ? parseInt($('#editGroupForm select[name="ParentId"]').val()) : null
+            };
+            $.ajax({
+                url: "/api/groups/edit-group",
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function () { location.reload(); },
+                error: function (xhr) { alert("Update failed: " + xhr.responseText); }
+            });
+        });
+        
+        $("#btnDeleteProduct").click(function () {
+            var id = $("#selectedProductId").val();
+            if (!id) { alert("Select a product first."); return; }
+            if (!confirm("Are you sure you want to delete selected item?")) return;
+            $.ajax({
+                url: `/api/products/delete-product/${id}`,
+                type: "DELETE",
+                success: function () { $(".product-row.selected-row").remove(); $("#selectedProductId").val(""); alert("Product deleted successfully."); },
+                error: function (xhr) { alert("Delete failed: " + xhr.responseText); }
+            });
+        });
+        
+        $("#btnDeleteGroup").click(function () {
+            var id = $("#selectedGroupId").val();
+            if (!id) { alert("Select a group first."); return; }
+            if (!confirm("Are you sure you want to delete selected group?")) return;
+            $.ajax({
+                url: `/api/groups/delete-group/${id}`,
+                type: "DELETE",
+                success: function () { $("#groupTree .list-group-item.selected-group").remove(); $("#selectedGroupId").val(""); alert("Group deleted successfully."); },
+                error: function (xhr) { alert("Delete failed: " + xhr.responseText); }
+            });
+        });
+
     });
 </script>

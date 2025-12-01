@@ -51,4 +51,11 @@ public class GroupsController : Controller
         var groups = await _groupService.GetGroupsAsync();
         return Ok(groups);
     }
+    
+    [HttpGet("get-group-by-id/{id}")]
+    public async Task<IActionResult> GetGroupById(int id)
+    {
+        var product = await _groupService.GetGroupByIdAsync(id);
+        return Ok(product);
+    }
 }

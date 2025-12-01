@@ -6,5 +6,6 @@ public interface IGroupService
     Task<int> UpdateGroupAsync(Group group);
     Task<int> DeleteGroupAsync(int id);
     Task<List<Group>> GetGroupsAsync();
+    Task<List<Group>> GetGroupByIdAsync(int id);
 
 }

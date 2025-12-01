@@ -53,4 +53,29 @@ public class ProductsController : Controller
         var products = await _productService.GetProductsAsync();
         return Ok(products);
     }
+
+    [HttpGet("get-product-by-id/{id}")]
+    public async Task<IActionResult> GetProductById(int id)
+    {
+        var product = await _productService.GetProductByIdAsync(id);
+        return Ok(product);
+    }
+    
+    [HttpGet("/Products/Diagram")]
+    public async Task<IActionResult> Diagram()
+    {
+        var products = await _productService.GetProductsAsync();
+        var startDate = products.Min(p => p.StartDate);
+        var endDate = products.Max(p => p.EndDate);
+
+        var model = new ProductDiagramViewModel
+        {
+            Products = products,
+            StartDate = startDate,
+            EndDate = endDate
+        };
+
+        return View(model);
+    }
+
 }

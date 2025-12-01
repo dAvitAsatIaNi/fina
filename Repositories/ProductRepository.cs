@@ -19,7 +19,7 @@ public class ProductRepository : IProductRepository
     public async Task<int> UpdateProductAsync(Product product)
     {
         return await _context.Database.ExecuteSqlInterpolatedAsync(
-            $"EXEC fina.AddProduct {product.Id}, {product.GroupId}, {product.Name}, {product.Price}, {product.Country}, {product.StartDate}, {product.EndDate}, {product.Code}");
+            $"EXEC fina.UpdateProduct {product.Id}, {product.GroupId}, {product.Code}, {product.Name}, {product.Price}, {product.Country}, {product.StartDate}, {product.EndDate}");
     }
 
     public async Task<int> DeleteProductAsync(int id)
@@ -32,6 +32,13 @@ public class ProductRepository : IProductRepository
     {
         return await _context.Products
             .FromSqlInterpolated($"EXEC fina.GetProducts")
+            .ToListAsync();
+    }
+
+    public async Task<List<Product>> GetProductByIdAsync(int id)
+    {
+        return await _context.Products
+            .FromSqlInterpolated($"EXEC fina.GetProductById {id}")
             .ToListAsync();
     }
 

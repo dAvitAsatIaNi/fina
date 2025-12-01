@@ -27,5 +27,10 @@ public class GroupService : IGroupService
     {
         return await _repository.GetGroupsAsync();
     }
+
+    public async Task<List<Group>> GetGroupByIdAsync(int id)
+    {
+        return await _repository.GetGroupByIdAsync(id);
+    }
     
 }

@@ -28,4 +28,9 @@ public class ProductService : IProductService
     {
         return await _repository.GetProductsAsync();
     }
+
+    public async Task<List<Product>> GetProductByIdAsync(int id)
+    {
+        return await _repository.GetProductByIdAsync(id);
+    }
 }
